@@ -29,12 +29,10 @@ package Trendy_Terminal.Mac is
     type FILE_Ptr is new System.Address;
 
     function fileno (Stream : FILE_Ptr) return FD with
-        Import     => True,
-        Convention => C;
+        Import => True, Convention => C;
 
     function isatty (File_Descriptor : FD) return BOOL with
-        Import     => True,
-        Convention => C;
+        Import => True, Convention => C;
 
     stdin  : aliased FILE_Ptr;
     stdout : aliased FILE_Ptr;
@@ -49,10 +47,41 @@ package Trendy_Terminal.Mac is
     type tcflag_t is new Interfaces.C.unsigned_long;
     type cc_t is new Interfaces.C.unsigned_char;
     type speed_t is new Interfaces.C.long;
-    type cc_array is array (Natural range 0 .. NCCS - 1) of cc_t
-        with Convention => C;
+    type cc_array is array (Natural range 0 .. NCCS - 1) of cc_t with
+        Convention => C;
 
     --!pp off
+    type c_iflag_bits is (
+       Unused1    ,
+       BRKINT     ,
+       Unused2    ,
+       Unused3    ,
+       INPCK      ,
+       ISTRIP     ,
+       Unused4    ,
+       Unused5    ,
+       ICRNL      ,
+       Unused6    ,
+       IXON       ,
+       Unused7
+       );
+
+    for c_iflag_bits use
+      (
+       Unused1    => 16#00000001#,
+       BRKINT     => 16#00000002#,
+       Unused2    => 16#00000004#,
+       Unused3    => 16#00000010#,
+       INPCK      => 16#00000020#,
+       ISTRIP     => 16#00000040#,
+       Unused4    => 16#00000100#,
+       Unused5    => 16#00000200#,
+       ICRNL      => 16#00000400#,
+       Unused6    => 16#00001000#,
+       IXON       => 16#00002000#,
+       Unused7    => 16#00004000#
+      );
+    
     type c_lflag_bits is (
        ECHOKE     ,
        ECHOE      ,
@@ -108,12 +137,13 @@ package Trendy_Terminal.Mac is
 
     pragma Warnings (Off, "bits of *unused");
     type c_lflag_t is array (c_lflag_bits) of Boolean with
-        Pack,
-        Size => tcflag_t'Size;
+        Pack, Size => tcflag_t'Size;
+    type c_iflag_t is array (c_iflag_bits) of Boolean with
+        Pack, Size => tcflag_t'Size;
     pragma Warnings (On, "bits of *unused");
 
     type Termios is record
-        c_iflag  : tcflag_t;
+        c_iflag  : c_iflag_t;
         c_oflag  : tcflag_t;
         c_cflag  : tcflag_t;
         c_lflag  : c_lflag_t;
@@ -125,8 +155,7 @@ package Trendy_Terminal.Mac is
         Convention => C;
 
     function tcgetattr (File_Descriptor : FD; Terminal : System.Address) return BOOL with
-        Import     => True,
-        Convention => C;
+        Import => True, Convention => C;
 
     type Application_Time is
         (TCSANOW,   -- immediate effect
@@ -137,7 +166,6 @@ package Trendy_Terminal.Mac is
 
     function tcsetattr
         (File_Descriptor : FD; Effect_Time : Application_Time; Terminal : System.Address) return BOOL with
-        Import     => True,
-        Convention => C;
+        Import => True, Convention => C;
 
 end Trendy_Terminal.Mac;

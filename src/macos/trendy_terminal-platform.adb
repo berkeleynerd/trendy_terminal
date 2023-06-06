@@ -39,16 +39,14 @@ package body Trendy_Terminal.Platform is
     ---------------------------------------------------------------------------
     -- Original settings
     ---------------------------------------------------------------------------
-    Original_Input_Setting, Original_Output_Setting, Original_Error_Setting :
-    Mac.Termios;
+    Original_Input_Setting, Original_Output_Setting, Original_Error_Setting : Mac.Termios;
 
     ---------------------------------------------------------------------------
     -- The triad of I/O streams.
     ---------------------------------------------------------------------------
     Std_Input, Std_Output, Std_Error : IOStream;
 
-    function Load_Terminal (File_Descriptor : Mac.FD; Terminal : not null access
-        Mac.Termios) return Boolean is
+    function Load_Terminal (File_Descriptor : Mac.FD; Terminal : not null access Mac.Termios) return Boolean is
     begin
         if Mac.isatty (File_Descriptor) = 0 then
             Ada.Text_IO.Put_Line ("Unable to load file descriptor for terminal.");
@@ -82,7 +80,8 @@ package body Trendy_Terminal.Platform is
         -- be restored when the system is shutdown.
     begin
         if not Make_Handle (Mac.stdin, Std_Input) or else not Make_Handle (Mac.stdout, Std_Output)
-            or else not Make_Handle (Mac.stderr, Std_Error) then
+            or else not Make_Handle (Mac.stderr, Std_Error)
+        then
             Ada.Text_IO.Put_Line ("Unable to get standard stream handles.");
         end if;
 
@@ -107,12 +106,24 @@ package body Trendy_Terminal.Platform is
     procedure Set (Setting : Platform.Input_Setting; Enabled : Boolean) is
     begin
         case Setting is
-            when Platform.Echo =>
+            when Platform.ECHO =>
                 Std_Input.Settings.c_lflag (Mac.ECHO) := Enabled;
-            when Platform.Line_Input =>
+            when Platform.ICANON =>
                 Std_Input.Settings.c_lflag (Mac.ICANON) := Enabled;
-            when Platform.Signals_As_Input =>
+            when Platform.ISIG =>
                 Std_Input.Settings.c_lflag (Mac.ISIG) := not Enabled;
+            when Platform.IEXTEN =>
+                Std_Input.Settings.c_lflag (Mac.IEXTEN) := Enabled;
+            when Platform.BRKINT =>
+                Std_Input.Settings.c_iflag (Mac.BRKINT) := Enabled;
+            when Platform.INPCK =>
+                Std_Input.Settings.c_iflag (Mac.INPCK) := Enabled;
+            when Platform.ISTRIP =>
+                Std_Input.Settings.c_iflag (Mac.ISTRIP) := not Enabled;
+            when Platform.ICRNL =>
+                Std_Input.Settings.c_iflag (Mac.ICRNL) := Enabled;
+            when Platform.IXON =>
+                Std_Input.Settings.c_iflag (Mac.IXON) := Enabled;
         end case;
         Require_Settings_Change (Std_Input);
     end Set;
@@ -131,23 +142,23 @@ package body Trendy_Terminal.Platform is
     procedure Put (S : String) renames Ada.Text_IO.Put;
 
     type VOIDP is new Interfaces.C.Strings.chars_ptr;
-    function Read (File_Descriptor : Mac.FD; Buffer : VOIDP; Buffer_Size : Natural) return Integer
-        with Import     => True,
-             Convention => C;
+    function Read (File_Descriptor : Mac.FD; Buffer : VOIDP; Buffer_Size : Natural) return Integer with
+        Import => True, Convention => C;
 
     -- Gets an entire input line from one keypress.  E.g. all the characters
     -- received for a controlling keypress, such as an arrow key.
     function Get_Input return String is
-        Buffer_Size  : constant := 512;
-        Buffer       : aliased Interfaces.C.char_array := (1 .. Interfaces.C.size_t(Buffer_Size) => Interfaces.C.nul);
-        Chars_Read   : Integer;
+        Buffer_Size : constant                        := 512;
+        Buffer      : aliased Interfaces.C.char_array := (1 .. Interfaces.C.size_t (Buffer_Size) => Interfaces.C.nul);
+        Chars_Read  : Integer;
         use all type Interfaces.C.size_t;
     begin
-        Chars_Read := Read (Mac.fileno (Std_Input.File),
-            VOIDP (Interfaces.C.Strings.To_Chars_Ptr (Buffer'Unchecked_Access)),
-            Buffer_Size);
+        Chars_Read :=
+            Read
+                (Mac.fileno (Std_Input.File), VOIDP (Interfaces.C.Strings.To_Chars_Ptr (Buffer'Unchecked_Access)),
+                 Buffer_Size);
         if Chars_Read > 0 then
-            return Interfaces.C.To_Ada(Buffer(1 .. Interfaces.C.size_t(Chars_Read) + 1));
+            return Interfaces.C.To_Ada (Buffer (1 .. Interfaces.C.size_t (Chars_Read) + 1));
         else
             return "";
         end if;
@@ -159,15 +170,26 @@ package body Trendy_Terminal.Platform is
     end End_Of_Line;
 
     procedure Print_Configuration is
-        function To_Integer is new Ada.Unchecked_Conversion (Mac.c_lflag_t, Interfaces.C.long);
+        function To_Integer1 is new Ada.Unchecked_Conversion (Mac.c_lflag_t, Interfaces.C.long);
+        function To_Integer2 is new Ada.Unchecked_Conversion (Mac.c_iflag_t, Interfaces.C.long);
     begin
-        Ada.Text_IO.Put_Line ("Original Input Mode:  " & To_Integer (Original_Input_Setting.c_lflag)'Image);
-        Ada.Text_IO.Put_Line ("Original Output Mode: " & To_Integer (Original_Output_Setting.c_lflag)'Image);
-        Ada.Text_IO.Put_Line ("Original Error Mode:  " & To_Integer (Original_Error_Setting.c_lflag)'Image);
+        Ada.Text_IO.Put_Line ("Original Local Input Mode : " & To_Integer1 (Original_Input_Setting.c_lflag)'Image);
+        Ada.Text_IO.Put_Line ("Local Input Mode          : " & To_Integer1 (Std_Input.Settings.c_lflag)'Image);
 
-        Ada.Text_IO.Put_Line ("Input Mode:  " & To_Integer (Std_Input.Settings.c_lflag)'Image);
-        Ada.Text_IO.Put_Line ("Output Mode: " & To_Integer (Std_Output.Settings.c_lflag)'Image);
-        Ada.Text_IO.Put_Line ("Error Mode:  " & To_Integer (Std_Error.Settings.c_lflag)'Image);
+        Ada.Text_IO.Put_Line ("");
+
+        Ada.Text_IO.Put_Line ("Original Input Settings   : " & To_Integer2 (Original_Input_Setting.c_iflag)'Image);
+        Ada.Text_IO.Put_Line ("Input Settings            : " & To_Integer2 (Std_Input.Settings.c_iflag)'Image);
+
+        Ada.Text_IO.Put_Line ("");
+
+        Ada.Text_IO.Put_Line ("Original Output Mode      : " & To_Integer1 (Original_Output_Setting.c_lflag)'Image);
+        Ada.Text_IO.Put_Line ("Output Mode               : " & To_Integer1 (Std_Output.Settings.c_lflag)'Image);
+
+        Ada.Text_IO.Put_Line ("");
+
+        Ada.Text_IO.Put_Line ("Original Error Mode       : " & To_Integer1 (Original_Error_Setting.c_lflag)'Image);
+        Ada.Text_IO.Put_Line ("Error Mode                : " & To_Integer1 (Std_Error.Settings.c_lflag)'Image);
     end Print_Configuration;
 
 end Trendy_Terminal.Platform;

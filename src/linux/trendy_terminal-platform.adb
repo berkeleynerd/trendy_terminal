@@ -106,12 +106,14 @@ package body Trendy_Terminal.Platform is
     procedure Set (Setting : Platform.Input_Setting; Enabled : Boolean) is
     begin
         case Setting is
-            when Platform.Echo =>
+            when Platform.ECHO =>
                 Std_Input.Settings.c_lflag (Linux.ECHO) := Enabled;
-            when Platform.Line_Input =>
+            when Platform.ICANON =>
                 Std_Input.Settings.c_lflag (Linux.ICANON) := Enabled;
-            when Platform.Signals_As_Input =>
+            when Platform.ISIG =>
                 Std_Input.Settings.c_lflag (Linux.ISIG) := not Enabled;
+            when Platform.IEXTEN =>
+                Std_Input.Settings.c_lflag (Linux.IEXTEN) := Enabled;
         end case;
         Require_Settings_Change (Std_Input);
     end Set;

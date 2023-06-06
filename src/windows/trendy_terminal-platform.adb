@@ -130,7 +130,7 @@ package body Trendy_Terminal.Platform is
         end if;
 
         -- Save the initial settings to be restored later.
-        Input_Settings  := Win.To_DWORD (Std_Input.Settings);
+        Input_Settingss  := Win.To_DWORD (Std_Input.Settings);
         Output_Settings := Win.To_DWORD (Std_Output.Settings);
         Error_Settings  := Win.To_DWORD (Std_Error.Settings);
 
