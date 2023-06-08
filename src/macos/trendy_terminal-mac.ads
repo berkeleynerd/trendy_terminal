@@ -52,19 +52,6 @@ package Trendy_Terminal.Mac is
 
     --!pp off
 
-    --     IGNBRK    ,  -- Unused
-    --     BRKINT    ,
-    --     IGNPAR    ,  -- Unused
-    --     PARMRK    ,  -- Unused
-    --     INPCK     ,
-    --     ISTRIP    ,
-    --     INLCR     ,  -- Unused
-    --     IGNCR     ,  -- Unused
-    --     ICRNL     ,
-    --     Unused6   ,  -- Unused
-    --     IXON      ,
-    --     Unused7       -- Unused
-
     type c_iflag_bits is (
         IGNBRK          ,       -- ignore BREAK condition
         BRKINT          ,       -- map BREAK to SIGINTR
@@ -79,22 +66,6 @@ package Trendy_Terminal.Mac is
         IXOFF           ,       -- enable input flow control
         IXANY                   -- any char will restart after stop
        );
-
-    --  for c_iflag_bits use
-    --    (
-    --     Unused1    => 16#00000001#,
-    --     BRKINT     => 16#00000002#,
-    --     Unused2    => 16#00000004#,
-    --     Unused3    => 16#00000010#,
-    --     INPCK      => 16#00000020#,
-    --     ISTRIP     => 16#00000040#,
-    --     Unused4    => 16#00000100#,
-    --     Unused5    => 16#00000200#,
-    --     ICRNL      => 16#00000400#,
-    --     Unused6    => 16#00001000#,
-    --     IXON       => 16#00002000#,
-    --     Unused7    => 16#00004000#
-    --    );
 
     for c_iflag_bits use
       (
@@ -112,31 +83,20 @@ package Trendy_Terminal.Mac is
         IXANY          => 16#00000800#         -- any char will restart after stop
       );
 
-    
-    --  type c_lflag_bits is (
-    --     ECHOKE     ,
-    --     ECHOE      ,
-    --     ECHOK      ,
-    --     ECHO       ,
-    --     ECHONL     ,
-    --     ECHOPRT    ,
-    --     ECHOCTL    ,
-    --     ISIG       ,
-    --     ICANON     ,
-    --     ALTWERASE  ,
-    --     IEXTEN     ,
-    --     EXTPROC    ,
-    --     Unused1    ,
-    --     Unused2    ,
-    --     TOSTOP     ,
-    --     FLUSHO     ,
-    --     Unused3    ,
-    --     NOKERNINFO ,
-    --     Unused4    ,
-    --     Unused5    ,
-    --     Unused6    ,
-    --     PENDIN     ,
-    --     NOFLSH);
+    type c_oflag_bits is (
+        OPOST          ,       -- enable following output processing
+        ONLCR          ,       -- map NL to CR-NL (ala CRMOD)
+        OXTABS         ,       -- expand tabs to spaces
+        ONOEOT                 -- discard EOT's (^D) on output)
+       );
+
+    for c_oflag_bits use
+      (
+        OPOST          => 16#00000001#,        -- enable following output processing
+        ONLCR          => 16#00000002#,        -- map NL to CR-NL (ala CRMOD)
+        OXTABS         => 16#00000004#,        -- expand tabs to spaces
+        ONOEOT         => 16#00000008#         -- discard EOT's (^D) on output)
+      );
 
     type c_lflag_bits is (
         ECHOKE      ,  -- visual erase for line kill
@@ -157,33 +117,6 @@ package Trendy_Terminal.Mac is
         PENDIN      ,  -- XXX retype pending input (state)
         NOFLSH         -- don't flush after interrupt
     );
-
-    --  for c_lflag_bits use
-    --    (
-    --     ECHOKE     => 16#00000001#,
-    --     ECHOE      => 16#00000002#,
-    --     ECHOK      => 16#00000004#,
-    --     ECHO       => 16#00000008#,
-    --     ECHONL     => 16#00000010#,
-    --     ECHOPRT    => 16#00000020#,
-    --     ECHOCTL    => 16#00000040#,
-    --     ISIG       => 16#00000080#,
-    --     ICANON     => 16#00000100#,
-    --     ALTWERASE  => 16#00000200#,
-    --     IEXTEN     => 16#00000400#,
-    --     EXTPROC    => 16#00000800#,
-    --     Unused1    => 16#00100000#,
-    --     Unused2    => 16#00200000#,
-    --     TOSTOP     => 16#00400000#,
-    --     FLUSHO     => 16#00800000#,
-    --     Unused3    => 16#01000000#,
-    --     NOKERNINFO => 16#02000000#,
-    --     Unused4    => 16#04000000#,
-    --     Unused5    => 16#08000000#,
-    --     Unused6    => 16#10000000#,
-    --     PENDIN     => 16#20000000#,
-    --     NOFLSH     => 16#80000000#
-    --    );
 
     for c_lflag_bits use
       (
@@ -209,15 +142,17 @@ package Trendy_Terminal.Mac is
     --!pp on
 
     pragma Warnings (Off, "bits of *unused");
-    type c_lflag_t is array (c_lflag_bits) of Boolean with
-        Pack, Size => tcflag_t'Size;
     type c_iflag_t is array (c_iflag_bits) of Boolean with
+        Pack, Size => tcflag_t'Size;
+    type c_oflag_t is array (c_oflag_bits) of Boolean with
+        Pack, Size => tcflag_t'Size;
+    type c_lflag_t is array (c_lflag_bits) of Boolean with
         Pack, Size => tcflag_t'Size;
     pragma Warnings (On, "bits of *unused");
 
     type Termios is record
         c_iflag  : c_iflag_t;
-        c_oflag  : tcflag_t;
+        c_oflag  : c_oflag_t;
         c_cflag  : tcflag_t;
         c_lflag  : c_lflag_t;
         c_line   : cc_t;

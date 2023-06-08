@@ -106,24 +106,26 @@ package body Trendy_Terminal.Platform is
     procedure Set (Setting : Platform.Input_Setting; Enabled : Boolean) is
     begin
         case Setting is
-            when Platform.ECHO =>
-                Std_Input.Settings.c_lflag (Mac.ECHO) := Enabled;
-            when Platform.ICANON =>
-                Std_Input.Settings.c_lflag (Mac.ICANON) := Enabled;
-            when Platform.ISIG =>
-                Std_Input.Settings.c_lflag (Mac.ISIG) := not Enabled;
-            when Platform.IEXTEN =>
-                Std_Input.Settings.c_lflag (Mac.IEXTEN) := Enabled;
             when Platform.BRKINT =>
                 Std_Input.Settings.c_iflag (Mac.BRKINT) := Enabled;
             when Platform.INPCK =>
                 Std_Input.Settings.c_iflag (Mac.INPCK) := Enabled;
             when Platform.ISTRIP =>
-                Std_Input.Settings.c_iflag (Mac.ISTRIP) := not Enabled;
+                Std_Input.Settings.c_iflag (Mac.ISTRIP) := Enabled;
             when Platform.ICRNL =>
                 Std_Input.Settings.c_iflag (Mac.ICRNL) := Enabled;
             when Platform.IXON =>
                 Std_Input.Settings.c_iflag (Mac.IXON) := Enabled;
+            when Platform.ECHO =>
+                Std_Input.Settings.c_lflag (Mac.ECHO) := Enabled;
+            when Platform.ICANON =>
+                Std_Input.Settings.c_lflag (Mac.ICANON) := Enabled;
+            when Platform.ISIG =>
+                Std_Input.Settings.c_lflag (Mac.ISIG) := Enabled;
+            when Platform.IEXTEN =>
+                Std_Input.Settings.c_lflag (Mac.IEXTEN) := Enabled;
+            when Platform.OPOST =>
+                Std_Input.Settings.c_oflag (Mac.OPOST) := Enabled;
         end case;
         Require_Settings_Change (Std_Input);
     end Set;
