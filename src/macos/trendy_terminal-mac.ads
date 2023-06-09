@@ -139,6 +139,45 @@ package Trendy_Terminal.Mac is
         NOFLSH      => 16#80000000#   -- don't flush after interrupt
       );
 
+    type c_cflag_bits is (
+        CS5            , -- 5 bits (pseudo)
+        CIGNORE        , -- character size mask
+          CS6          ,    -- 6 bits
+          CS7          ,    -- 7 bits
+          CS8          ,    -- 8 bits
+        CSTOPB         , -- send 2 stop bits
+        CREAD          , -- enable receiver
+        PARENB         , -- parity enable
+        PARODD         , -- odd parity, else even
+        HUPCL          , -- hang up on last close
+        CLOCAL         , -- ignore modem status lines
+        CCTS_OFLOW     , -- CTS flow control of output
+        CRTS_IFLOW     , -- RTS flow control of input
+        CDTR_IFLOW     , -- DTR flow control of input
+        CDSR_OFLOW     , -- DSR flow control of output
+        CCAR_OFLOW       -- DCD flow control of output
+    );
+
+    for c_cflag_bits use
+      (
+        CS5           => 16#00000000#,    -- 5 bits (pseudo)
+        CIGNORE       => 16#00000001#,    -- character size mask
+          CS6         => 16#00000100#,    -- 6 bits
+          CS7         => 16#00000200#,    -- 7 bits
+          CS8         => 16#00000300#,    -- 8 bits
+        CSTOPB        => 16#00000400#,    -- send 2 stop bits
+        CREAD         => 16#00000800#,    -- enable receiver
+        PARENB        => 16#00001000#,    -- parity enable
+        PARODD        => 16#00002000#,    -- odd parity, else even
+        HUPCL         => 16#00004000#,    -- hang up on last close
+        CLOCAL        => 16#00008000#,    -- ignore modem status lines
+        CCTS_OFLOW    => 16#00010000#,    -- CTS flow control of output
+        CRTS_IFLOW    => 16#00020000#,    -- RTS flow control of input
+        CDTR_IFLOW    => 16#00040000#,    -- DTR flow control of input
+        CDSR_OFLOW    => 16#00080000#,    -- DSR flow control of output
+        CCAR_OFLOW    => 16#00100000#     -- DCD flow control of output
+      );
+
     --!pp on
 
     pragma Warnings (Off, "bits of *unused");
@@ -148,12 +187,14 @@ package Trendy_Terminal.Mac is
         Pack, Size => tcflag_t'Size;
     type c_lflag_t is array (c_lflag_bits) of Boolean with
         Pack, Size => tcflag_t'Size;
+    type c_cflag_t is array (c_cflag_bits) of Boolean with
+        Pack, Size => tcflag_t'Size;
     pragma Warnings (On, "bits of *unused");
 
     type Termios is record
         c_iflag  : c_iflag_t;
         c_oflag  : c_oflag_t;
-        c_cflag  : tcflag_t;
+        c_cflag  : c_cflag_t;
         c_lflag  : c_lflag_t;
         c_line   : cc_t;
         c_cc     : cc_array;

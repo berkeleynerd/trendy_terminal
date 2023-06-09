@@ -35,7 +35,11 @@ package Trendy_Terminal.Platform is
     -- Restores the system to the conditions prior to calling `Init`.
     procedure Shutdown;
 
-    type Input_Setting is (ECHO, ICANON, ISIG, IEXTEN, BRKINT, INPCK, ISTRIP, ICRNL, IXON, OPOST);
+    type Input_Setting is
+        (IGNBRK, BRKINT, IGNPAR, PARMRK, INPCK, ISTRIP, INLCR, IGNCR, ICRNL, IXON, IXOFF, IXANY, OPOST, ONLCR, OXTABS,
+         ONOEOT, ECHOKE, ECHOE, ECHOK, ECHO, ECHONL, ECHOPRT, ECHOCTL, ISIG, ICANON, ALTWERASE, IEXTEN, EXTPROC, TOSTOP,
+         FLUSHO, NOKERNINFO, PENDIN, NOFLSH, CS5, CIGNORE, CS6, CS7, CS8, CSTOPB, CREAD, PARENB, PARODD, HUPCL, CLOCAL,
+         CCTS_OFLOW, CRTS_IFLOW, CDTR_IFLOW, CDSR_OFLOW, CCAR_OFLOW);
     type Output_Setting is (Escape_Sequences);
 
     procedure Set (Setting : Input_Setting; Enabled : Boolean);
