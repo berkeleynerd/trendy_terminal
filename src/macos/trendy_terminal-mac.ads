@@ -178,6 +178,31 @@ package Trendy_Terminal.Mac is
         CCAR_OFLOW    => 16#00100000#     -- DCD flow control of output
       );
 
+      type c_cc_index is (
+        VEOF      0	-- ICANON */
+        VEOL		  1	-- ICANON */
+        VEOL2     2	-- ICANON together with IEXTEN */
+        VERASE    3	-- ICANON */
+        VWERASE 	4	-- ICANON together with IEXTEN */
+        VKILL     5	-- ICANON */
+        VREPRINT  6	-- ICANON together with IEXTEN */
+        UNDEF1    7	-- not defined */
+        VINTR     8	-- ISIG */
+        VQUIT	    9	-- ISIG */
+        VSUSP		  10	/* ISIG */
+        VDSUSP		11	/* ISIG together with IEXTEN */
+        VSTART		12	/* IXON, IXOFF */
+        VSTOP		13	/* IXON, IXOFF */
+        VLNEXT		14	/* IEXTEN */
+        VDISCARD	15	/* IEXTEN */
+        VMIN		16	/* !ICANON */
+        VTIME		17	/* !ICANON */
+        VSTATUS		18	/* ICANON together with IEXTEN */
+        UNDEF2 19	   /* not defined */
+        NCCS		20
+        );
+
+
     --!pp on
 
     pragma Warnings (Off, "bits of *unused");
